@@ -46,7 +46,9 @@ def check_file(filename):
     logger = logging.getLogger("fiinch")
 
     logger.debug("Checking file " + filename)
-    assert(os.path.exists(filename))
+    assert(os.path.lexists(filename))
+    if not os.path.exists(filename):
+        logger.warning(filename + " is likely a broken symbolic link.")
 
 if __name__ == "__main__":
     logger_setup = logging.getLogger("fiinch")
