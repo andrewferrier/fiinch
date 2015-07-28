@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+
+from sys import platform as _platform
+
+import argparse
+import coloredlogs
+import logging
+import logging.handlers
+import os
+import sys
+
+def main(argv, syslog_handler, syserr_handler):
+    parser = argparse.ArgumentParser(description="The file integrity checker. "
+                            "See https://github.com/andrewferrier/fiinch for more information.")
+
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+                        help="Make the output more verbose. This affects both the output logged to "
+                        "syslog, as well as output to the console. Using this twice makes it doubly verbose.")
+
+    parser.add_argument('filenames', metavar="filename", nargs='+', help='Filenames')
+
+    args = parser.parse_args(argv[1:])
+
+    if syslog_handler:
+        if args.verbose > 1:
+            syslog_handler.setLevel(logging.DEBUG)
+        elif args.verbose == 1:
+            syslog_handler.setLevel(logging.DEBUG)
+        else:
+            syslog_handler.setLevel(logging.INFO)
+
+    if syserr_handler:
+        if args.verbose > 1:
+            syserr_handler.setLevel(logging.DEBUG)
+        elif args.verbose == 1:
+            syserr_handler.setLevel(logging.INFO)
+        else:
+            syserr_handler.setLevel(logging.WARNING)
+
+    for filename in args.filenames:
+        for root, dirs, files in os.walk(filename):
+            for file_one in files:
+                check_file(os.path.join(root, file_one))
+
+def check_file(filename):
+    logger = logging.getLogger("fiinch")
+
+    logger.debug("Checking file " + filename)
+    assert(os.path.exists(filename))
+
+if __name__ == "__main__":
+    logger_setup = logging.getLogger("fiinch")
+    logger_setup.propagate = False
+    logger_setup.setLevel(logging.DEBUG)
+
+    coloredlogs.install(level=logging.DEBUG)
+
+    if _platform == "linux" or _platform == "linux2":
+        sysLogAddress = '/dev/log'
+    elif _platform == "darwin":
+        sysLogAddress = '/var/run/syslog'
+    else:
+        print("Unsupported platform.")
+        sys.exit(3)
+
+    sysLogHandler = logging.handlers.SysLogHandler(address=sysLogAddress)
+    sysLogHandler.setLevel(logging.INFO)
+    sysLogFormatter = logging.Formatter('%(pathname)s[%(process)d] %(levelname)s %(lineno)d %(message)s')
+    sysLogHandler.setFormatter(sysLogFormatter)
+    logger_setup.addHandler(sysLogHandler)
+
+    sysErrHandler = coloredlogs.ColoredStreamHandler(stream=sys.stderr, show_timestamps=False, show_hostname=False, show_name=False, show_severity=False)
+    sysErrHandler.setLevel(logging.WARNING)
+    logger_setup.addHandler(sysErrHandler)
+
+    main(sys.argv, sysLogHandler, sysErrHandler)
