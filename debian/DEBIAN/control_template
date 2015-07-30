@@ -1,0 +1,9 @@
+Package: fiinch
+Version: <version_goes_here>
+Section: base
+Priority: optional
+Architecture: all
+Depends: python3
+Maintainer: Andrew Ferrier <andrew.ferrier@example.com>
+Description: FIle INtegrity CHecker.
+ FIle INtegrity CHecker.
