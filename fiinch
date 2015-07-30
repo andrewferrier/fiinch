@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 
+from subprocess import check_output
 from sys import platform as _platform
 
 import argparse
 import coloredlogs
 import logging
 import logging.handlers
+import mimetypes
 import os
+import re
 import sys
+
+IGNORE_REGEXES = frozenset([r".*/\.Trash/.*"])
 
 def main(argv, syslog_handler, syserr_handler):
     parser = argparse.ArgumentParser(description="The file integrity checker. "
@@ -40,7 +45,17 @@ def main(argv, syslog_handler, syserr_handler):
     for filename in args.filenames:
         for root, dirs, files in os.walk(filename):
             for file_one in files:
-                check_file(os.path.join(root, file_one))
+                full_file_name = os.path.join(root, file_one)
+
+                continue_with_file = True
+
+                for IGNORE_REGEX_PATTERN in IGNORE_REGEXES:
+                    if re.fullmatch(IGNORE_REGEX_PATTERN, full_file_name):
+                        continue_with_file = False
+                        break
+
+                if continue_with_file:
+                        check_file(full_file_name)
 
 def check_file(filename):
     logger = logging.getLogger("fiinch")
@@ -49,6 +64,15 @@ def check_file(filename):
     assert(os.path.lexists(filename))
     if not os.path.exists(filename):
         logger.warning(filename + " is likely a broken symbolic link.")
+
+    detected_mime_type = str(check_output(["file", "--brief", "--mime-type", filename]), 'utf-8').rstrip('\n')
+    logger.debug("Detected mime type is " + detected_mime_type)
+    extension_list = mimetypes.guess_all_extensions(detected_mime_type)
+    logger.debug("List of extensions is " + str(extension_list))
+    _, actual_extension = os.path.splitext(filename)
+
+    if actual_extension not in extension_list:
+        logger.warning("Expected content mismatch. File " + filename + " was expected to have an extension from " + str(extension_list) + " (mime type " + detected_mime_type + ')')
 
 if __name__ == "__main__":
     logger_setup = logging.getLogger("fiinch")
