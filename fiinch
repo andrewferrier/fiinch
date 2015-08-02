@@ -57,14 +57,33 @@ def check_file(filename):
     if not os.path.exists(filename):
         logger.warning(filename + " is likely a broken symbolic link.")
 
-    detected_mime_type = str(check_output(["file", "--brief", "--mime-type", filename]), 'utf-8').rstrip('\n')
-    logger.debug("Detected mime type is " + detected_mime_type)
-    extension_list = mimetypes.guess_all_extensions(detected_mime_type)
-    logger.debug("List of extensions is " + str(extension_list))
     _, actual_extension = os.path.splitext(filename)
 
-    if actual_extension not in extension_list:
-        logger.warning("Expected content mismatch. File " + filename + " was expected to have an extension from " + str(extension_list) + " (mime type " + detected_mime_type + ')')
+    if not actual_extension == "":
+        detected_mime_type = str(check_output(["file", "--brief", "--mime-type", "--keep-going", filename]), 'utf-8').rstrip('\n')
+        logger.debug("Detected mime type is " + detected_mime_type)
+
+        if actual_extension in mimetypes.types_map:
+            expected_mime_types = [mimetypes.types_map[actual_extension]]
+            logger.debug("Expected MIME type can be one of " + str(expected_mime_types))
+        else:
+            expected_mime_types = []
+
+        if actual_extension in mimetypes.common_types:
+            common_mime_types = mimetypes.common_types[actual_extension]
+            logger.debug("Other common ones " + str(common_mime_types))
+        else:
+            common_mime_types = []
+
+        assert(type(expected_mime_types) is list)
+        assert(type(common_mime_types) is list)
+        total_mime_types = expected_mime_types + common_mime_types
+
+        if len(total_mime_types) > 0:
+            if detected_mime_type not in total_mime_types:
+                logger.warning("Expected content mismatch. File " + filename + " was expected to have a mime type from " + str(total_mime_types) + " (mime type detected as " + detected_mime_type + ')')
+        else:
+            logger.debug("No known MIME types for " + actual_extension)
 
 if __name__ == "__main__":
     logger_setup = logging.getLogger("fiinch")
