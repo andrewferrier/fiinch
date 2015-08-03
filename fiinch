@@ -75,8 +75,14 @@ def check_file(filename):
         else:
             common_mime_types = []
 
-        assert(type(expected_mime_types) is list)
+        if type(expected_mime_types) is str:
+            expected_mime_types = [ expected_mime_types ]
+        if type(common_mime_types) is str:
+            common_mime_types = [ common_mime_types ]
+
         assert(type(common_mime_types) is list)
+        assert(type(expected_mime_types) is list)
+
         total_mime_types = expected_mime_types + common_mime_types
 
         if len(total_mime_types) > 0:
