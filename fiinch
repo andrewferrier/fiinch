@@ -14,6 +14,8 @@ import sys
 
 IGNORE_REGEXES = frozenset([r".*/\.Trash/.*"])
 
+IGNORE_DETECTED_TYPES = frozenset([r"text/plain"])
+
 EQUIVALENT_BIDIRECTIONAL = [
     frozenset(['application/x-sh', 'text/x-shellscript'])
 ]
@@ -73,6 +75,11 @@ def check_file(filename):
     if not actual_extension == "":
         detected_mime_type = str(check_output(["file", "--brief", "--mime-type", "--keep-going", filename]), 'utf-8').rstrip('\n')
         logger.debug("Detected mime type is " + detected_mime_type)
+
+        for IGNORE_DETECTED_TYPE in IGNORE_DETECTED_TYPES:
+            if re.fullmatch(IGNORE_DETECTED_TYPE, detected_mime_type):
+                logger.debug("Skipping file " + filename + " because mime type " + detected_mime_type + " matches pattern " + IGNORE_DETECTED_TYPE)
+                return
 
         if actual_extension in mimetypes.types_map:
             expected_mime_types = [mimetypes.types_map[actual_extension]]
