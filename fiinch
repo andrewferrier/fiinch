@@ -12,12 +12,13 @@ import os
 import re
 import sys
 
-IGNORE_REGEXES = frozenset([r".*/\.Trash/.*"])
+IGNORE_REGEXES = frozenset([r".*/\.Trash/.*", r".*/\.vim/undo/.*"])
 
 IGNORE_DETECTED_TYPES = frozenset([r"text/plain"])
 
 EQUIVALENT_BIDIRECTIONAL = [
-    frozenset(['application/x-sh', 'text/x-shellscript'])
+    frozenset(['application/x-sh', 'text/x-shellscript']),
+    frozenset(['image/vnd.microsoft.icon', 'image/x-icon'])
 ]
 
 def main(argv, syserr_handler):
