@@ -1,3 +1,17 @@
 # What is this?
 
-fiinch. The FIle INtegrity CHecker.
+This is `fiinch`, the **FI**le **IN**tegrity **CH**ecker. `fiinch`'s ultimate goal is to run a variety of tests against a directory tree. It can be invoked like this:
+
+```
+  fiinch <directoryname1> <directoryname2> ...
+```
+
+It will recursively check all the files in each directory provided, in turn. If any file doesn't match up to `fiinch`'s checks, it will warn you.
+
+`fiinch` is very much a work in progress. So far, `fiinch` checks for:
+
+* Files where the contents (using the Unix `file` utility) don't seem to match the expected contents, judging by the file extension.
+
+# Installing
+
+A Debian package for `fiinch` can be made with `make builddeb`.
