@@ -18,7 +18,8 @@ IGNORE_DETECTED_TYPES = frozenset([r"text/plain"])
 
 EQUIVALENT_BIDIRECTIONAL = [
     frozenset(['application/x-sh', 'text/x-shellscript']),
-    frozenset(['image/vnd.microsoft.icon', 'image/x-icon'])
+    frozenset(['image/vnd.microsoft.icon', 'image/x-icon']),
+    frozenset(['applications/vnd.ms-powerpoint', 'application/vnd.ms-office'])
 ]
 
 def main(argv, syserr_handler):
