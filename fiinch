@@ -127,10 +127,10 @@ if __name__ == "__main__":
     logger_setup.propagate = False
     logger_setup.setLevel(logging.DEBUG)
 
-    coloredlogs.install(level=logging.DEBUG)
-
-    sysErrHandler = coloredlogs.ColoredStreamHandler(stream=sys.stderr, show_timestamps=False, show_hostname=False, show_name=False, show_severity=False)
+    sysErrHandler = logging.StreamHandler(stream=sys.stderr)
     sysErrHandler.setLevel(logging.WARNING)
+    sysErrFormatter = coloredlogs.ColoredFormatter('%(levelname)s: %(message)s')
+    sysErrHandler.setFormatter(sysErrFormatter)
     logger_setup.addHandler(sysErrHandler)
 
     main(sys.argv, sysErrHandler)
