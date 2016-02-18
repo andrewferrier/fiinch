@@ -30,6 +30,11 @@ def main(argv, syserr_handler):
                         help="Make the output more verbose. This affects both the output logged to "
                         "the console. Using this twice makes it doubly verbose.")
 
+    parser.add_argument('--disable-mimetypematch-check', dest='mimetypematch_check', action='store_false',
+                        default=True, help="Don't check if the file's MIME "
+                        "type (according to file extension) matches the MIME "
+                        "type (according to file content)")
+
     parser.add_argument('filenames', metavar="filename", nargs='+', help='Filenames')
 
     args = parser.parse_args(argv[1:])
@@ -55,16 +60,9 @@ def main(argv, syserr_handler):
                         break
 
                 if continue_with_file:
-                        check_file(full_file_name)
+                        check_file(args, full_file_name)
 
-def find_equivalents(mimetype):
-    for set in EQUIVALENT_BIDIRECTIONAL:
-        if mimetype in set:
-            return list(set - frozenset([mimetype]))
-
-    return []
-
-def check_file(filename):
+def check_file(args, filename):
     logger = logging.getLogger("fiinch")
 
     logger.debug("Checking file " + filename)
@@ -72,6 +70,10 @@ def check_file(filename):
     if not os.path.exists(filename):
         logger.warning(filename + " is likely a broken symbolic link.")
 
+    if args.mimetypematch_check:
+        check_file_mimetypematch(filename)
+
+def check_file_mimetypematch(filename):
     _, actual_extension = os.path.splitext(filename)
 
     if not actual_extension == "":
@@ -121,6 +123,13 @@ def check_file(filename):
                 logger.warning("Expected content mismatch. File " + filename + " was expected to have a mime type from " + str(total_mime_types) + " (mime type detected as " + detected_mime_type + ')')
         else:
             logger.debug("No known MIME types for " + actual_extension)
+
+def find_equivalents(mimetype):
+    for set in EQUIVALENT_BIDIRECTIONAL:
+        if mimetype in set:
+            return list(set - frozenset([mimetype]))
+
+    return []
 
 if __name__ == "__main__":
     logger_setup = logging.getLogger("fiinch")
