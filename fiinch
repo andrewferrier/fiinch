@@ -74,6 +74,8 @@ def check_file(args, filename):
         check_file_mimetypematch(filename)
 
 def check_file_mimetypematch(filename):
+    logger = logging.getLogger("fiinch")
+
     _, actual_extension = os.path.splitext(filename)
 
     if not actual_extension == "":
