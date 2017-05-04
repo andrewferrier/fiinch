@@ -1,10 +1,10 @@
 TEMPDIR := $(shell mktemp -t tmp.XXXXXX -d)
 
+builddeb: determineversion builddeb_real
+
 determineversion:
 	$(eval GITDESCRIBE := $(shell git describe --dirty))
 	sed 's/Version: .*/Version: $(GITDESCRIBE)/' debian/DEBIAN/control_template > debian/DEBIAN/control
-
-builddeb: determineversion builddeb_real
 
 builddeb_real:
 	sudo apt-get install build-essential
