@@ -15,3 +15,5 @@ It will recursively check all the files in each directory provided, in turn. If 
 # Installing
 
 A Debian package for `fiinch` can be made with `make builddeb`.
+
+For Debian/Ubuntu, there is support in my sister project [python-deb](https://github.com/andrewferrier/python-deb) for building some dependent modules.
