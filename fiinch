@@ -18,7 +18,7 @@ IGNORE_DETECTED_TYPES = frozenset([r"text/plain"])
 
 EQUIVALENT_BIDIRECTIONAL = [
     frozenset(['application/x-sh', 'text/x-shellscript']),
-    frozenset(['image/vnd.microsoft.icon', 'image/x-icon']),
+    frozenset(['image/vnd.microsoft.icon', 'image/x-icon', 'image/x-ico']),
     frozenset(['application/vnd.ms-powerpoint', 'application/vnd.ms-office']),
     frozenset(['application/javascript', 'text/x-c++', 'text/x-c']),
     frozenset(['text/css', 'text/x-c'])
