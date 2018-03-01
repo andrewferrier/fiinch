@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from subprocess import check_output
-from sys import platform as _platform
 
 import argparse
 import coloredlogs
@@ -24,9 +23,10 @@ EQUIVALENT_BIDIRECTIONAL = [
     frozenset(['text/css', 'text/x-c'])
 ]
 
+
 def main(argv, syserr_handler):
     parser = argparse.ArgumentParser(description="The file integrity checker. "
-                            "See https://github.com/andrewferrier/fiinch for more information.")
+                                     "See https://github.com/andrewferrier/fiinch for more information.")
 
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="Make the output more verbose. This affects both the output logged to "
@@ -64,6 +64,7 @@ def main(argv, syserr_handler):
                 if continue_with_file:
                         check_file(args, full_file_name)
 
+
 def check_file(args, filename):
     logger = logging.getLogger("fiinch")
 
@@ -74,6 +75,7 @@ def check_file(args, filename):
 
     if args.mimetypematch_check:
         check_file_mimetypematch(filename)
+
 
 def check_file_mimetypematch(filename):
     logger = logging.getLogger("fiinch")
@@ -86,7 +88,8 @@ def check_file_mimetypematch(filename):
 
         for IGNORE_DETECTED_TYPE in IGNORE_DETECTED_TYPES:
             if re.fullmatch(IGNORE_DETECTED_TYPE, detected_mime_type):
-                logger.debug("Skipping file " + filename + " because mime type " + detected_mime_type + " matches pattern " + IGNORE_DETECTED_TYPE)
+                logger.debug("Skipping file " + filename + " because mime type " + detected_mime_type +
+                             " matches pattern " + IGNORE_DETECTED_TYPE)
                 return
 
         if actual_extension in mimetypes.types_map:
@@ -102,9 +105,9 @@ def check_file_mimetypematch(filename):
             common_mime_types = []
 
         if type(expected_mime_types) is str:
-            expected_mime_types = [ expected_mime_types ]
+            expected_mime_types = [expected_mime_types]
         if type(common_mime_types) is str:
-            common_mime_types = [ common_mime_types ]
+            common_mime_types = [common_mime_types]
 
         assert(type(common_mime_types) is list)
         assert(type(expected_mime_types) is list)
@@ -124,9 +127,12 @@ def check_file_mimetypematch(filename):
 
         if len(total_mime_types) > 0:
             if detected_mime_type not in total_mime_types:
-                logger.warning("Expected content mismatch. File " + filename + " was expected to have a mime type from " + str(total_mime_types) + " (mime type detected as " + detected_mime_type + ')')
+                logger.warning("Expected content mismatch. File " + filename +
+                               " was expected to have a mime type from " + str(total_mime_types) +
+                               " (mime type detected as " + detected_mime_type + ')')
         else:
             logger.debug("No known MIME types for " + actual_extension)
+
 
 def find_equivalents(mimetype):
     for set in EQUIVALENT_BIDIRECTIONAL:
@@ -134,6 +140,7 @@ def find_equivalents(mimetype):
             return list(set - frozenset([mimetype]))
 
     return []
+
 
 if __name__ == "__main__":
     logger_setup = logging.getLogger("fiinch")
