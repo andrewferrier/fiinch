@@ -1,5 +1,7 @@
 # What is this?
 
+**⚠️ DEPRECATED: This repository is deprecated, as fiinch was never really finished, and I don't have the time to finish it. For now, it will remain here in case anyone wishes to fork and maintain it.**
+
 This is `fiinch`, the **FI**le **IN**tegrity **CH**ecker. `fiinch`'s ultimate goal is to run a variety of tests against a directory tree. It can be invoked like this:
 
 ```
